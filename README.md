@@ -1,5 +1,5 @@
 # Image Viewer
-This program is a simple image viewer in python using PyQt.
+This program is a simple image viewer in python using PySide2.
 
 ## Syntax:
 ```shell
