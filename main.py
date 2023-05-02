@@ -5,4 +5,4 @@ import PySide2.QtGui as QtGui
 import PySide2.QtWidgets as QtWidgets
 import sys
 
-window = QtWidgets()
+window = QtWidgets.QWidget()
