@@ -10,7 +10,7 @@ from PySide2.QtWidgets import (
     QFileDialog,
 )
 from PySide2.QtCore import Qt, QSize
-from PySide2.QtGui import QIcon, QPixmap
+from PySide2.QtGui import QIcon, QPixmap, QImage
 import sys
 import os
 
@@ -18,7 +18,9 @@ import os
 class MainWindow(QMainWindow):
     def __init__(self, fileName):
         super().__init__()
-        self.filename = fileName
+        self.ImageFile = (
+            QImage("assets/test.jpg") if fileName == "default" else QImage(fileName)
+        )
 
         # Main
         self.setWindowTitle("Image Viewer")
@@ -27,11 +29,11 @@ class MainWindow(QMainWindow):
 
         # Image
         self.image = QLabel()
-        self.image.setPixmap(
-            QPixmap("assets/test.jpg" if self.filename == "default" else self.filename)
-        )
+        self.image.setPixmap(QPixmap(self.ImageFile))
         self.image.setMargin(15)
         self.image.setAlignment(Qt.AlignCenter)
+        # self.image.resize(self.width(), self.height())
+        # self.image.setScaledContents(True)
 
         # Toolbar
         toolbar = QToolBar("Main Toolbar")
@@ -45,6 +47,9 @@ class MainWindow(QMainWindow):
         toolbar.setFloatable(False)
         toolbar.addAction(btnOpen)
 
+        self.resize(QSize(self.ImageFile.width(), self.ImageFile.height()))
+        print(f"Resizing to {QSize(self.ImageFile.width(), self.ImageFile.height())}")
+        print("=" * 10)
         self.setCentralWidget(self.image)
 
     def OpenImage(self):
@@ -57,10 +62,15 @@ class MainWindow(QMainWindow):
             f"/home/{os.getlogin()}",
             "Images (*.png *.jpg *.bmp);;Any (*.*)",
         )[0]
+
         print(f"Selection: {selectedFileName}")
         if selectedFileName != "":
-            self.filename = selectedFileName
-            self.image.setPixmap(QPixmap(self.filename))
+            self.ImageFile = QImage(selectedFileName)
+            self.resize(QSize(self.ImageFile.width(), self.ImageFile.height()))
+            print(
+                f"Resizing to {QSize(self.ImageFile.width(), self.ImageFile.height())}"
+            )
+            self.image.setPixmap(QPixmap(self.ImageFile))
 
 
 file = "default"
@@ -76,6 +86,7 @@ if len(args) > 0:
     if not args[0].endswith("main.py"):
         file = args[0]
 print(f"View: {file}")
+print("=" * 10)
 
 app = QApplication(sys.argv)
 
