@@ -13,7 +13,7 @@
 # Image Viewer
 This program is a simple image viewer in python using PySide2.
 
-## Syntax:
+## Usage:
 ```shell
 python main.py [filename]
 ```
