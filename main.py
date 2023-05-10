@@ -7,30 +7,60 @@ from PySide2.QtWidgets import (
     QLabel,
     QToolBar,
     QAction,
-    QStatusBar,
+    QFileDialog,
 )
 from PySide2.QtCore import Qt, QSize
 from PySide2.QtGui import QIcon, QPixmap
 import sys
+import os
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, filename):
+    def __init__(self, fileName):
         super().__init__()
+        self.filename = fileName
 
         # Main
         self.setWindowTitle("Image Viewer")
-        self.setMinimumSize(QSize(360, 360))
         self.setWindowIcon(QIcon("assets/icon.png"))
+        self.setMinimumSize(QSize(360, 360))
 
-        image = QLabel()
-        image.setPixmap(
-            QPixmap("assets/test.jpg" if filename == "default" else filename)
+        # Image
+        self.image = QLabel()
+        self.image.setPixmap(
+            QPixmap("assets/test.jpg" if self.filename == "default" else self.filename)
         )
-        image.setMargin(15)
-        image.setAlignment(Qt.AlignCenter)
+        self.image.setMargin(15)
+        self.image.setAlignment(Qt.AlignCenter)
 
-        self.setCentralWidget(image)
+        # Toolbar
+        toolbar = QToolBar("Main Toolbar")
+        self.addToolBar(toolbar)
+
+        btnOpen = QAction(QIcon("assets/open.png"), "Open File", self)
+        btnOpen.setStatusTip("Open a file to view.")
+        btnOpen.triggered.connect(self.OpenImage)
+        btnOpen.setShortcut("Ctrl+O")
+        toolbar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)
+        toolbar.setFloatable(False)
+        toolbar.addAction(btnOpen)
+
+        self.setCentralWidget(self.image)
+
+    def OpenImage(self):
+        self.dialog = QFileDialog()
+        self.dialog.setFileMode(QFileDialog.ExistingFile)
+        self.dialog.setViewMode(QFileDialog.Detail)
+        selectedFileName = self.dialog.getOpenFileName(
+            self,
+            "Open Image",
+            f"/home/{os.getlogin()}",
+            "Images (*.png *.jpg *.bmp);;Any (*.*)",
+        )[0]
+        print(f"Selection: {selectedFileName}")
+        if selectedFileName != "":
+            self.filename = selectedFileName
+            self.image.setPixmap(QPixmap(self.filename))
 
 
 file = "default"
